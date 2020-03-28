@@ -1,0 +1,66 @@
+Server Requirements:
+• The server must be multi-threaded. A new thread will be created each time a new user joins
+the conversation. This thread will be responsible for accepting incoming messages from that
+user and broadcasting them to the other chat users. Call the server “chat-server”.
+
+• QUESTION: How will each of the threads learn about all of the other threads and their
+IP addresses in order to send the message? Think of a data structure that might be
+used to hold all client information (IP Address, the user name, etc.) within the server
+and will be visible and shared among all the communication threads.
+
+• Your server design must be able to support a maximum of 10 clients.
+
+10. When the user enters the message “>>bye<<” – their client application will shut down properly.
+	• The server can end the thread that is connected to this client and as well clean up any
+	information dealing with the client.
+• When the number of threads reaches zero in the server, it may shutdown properly
+
+
+						*****
+
+
+General Requirements:
+1. In this assignment – you are creating a system called CHAT-SYSTEM. This system is comprised of 2
+applications – the server (called chat-server) and the client (called chat-client). These names
+must be used and reflected in your system development structure. (Please refer to the “Linux
+Development Project Code Structure” document in the course content)
+
+2. Your solution architecture must be a central server model written in ANSI C.
+• The chat functionality must operate across computers that are in the same subnet
+
+3. Your chat solution must be able to support at least 2 users being able to chat with each other.
+• This means that each person can see the messages in the conversation as it goes back and forth
+– so each user’s message must be tagged with their name (or userID)
+
+4. While running the CHAT-SYSTEM the minimum configuration should be:
+• The chat-server application must run on a Linux VM (MACHINE-A)
+• One of the chat-client applications must run on a different Linux VM (MACHINE-B)
+• The second chat-client application can run on the same Linux VM as the server
+(MACHINE-A)
+	• But in light of the COVID-19 situation where partners will not necessarily be
+	working and debugging their solution together (i.e. physically) … the allowed
+	configuration for testing is now:
+		• The chat-server application must run on a Linux VM (MACHINE-A)
+		• Both of the chat-client applications can run on the same Linux VM as
+		the server (MACHINE-A)
+
+9. Your solution should be architected such that messages should be received as soon as they are
+sent. And as well, if a message is received when the user is typing another message, it must not
+interrupt the message being currently composed.
+
+11. There should be no debugging messages being printed to the screen in your final client and server
+programs.
+
+12. Your solution must be programmed to handle any and all errors gracefully.
+
+13. Your solution must be programmed to handle any and all shutdowns gracefully.
+
+14. If there are command line parameters available in either your client or server programs then make
+sure that a usage message appears if the parameters are incorrect or missing.
+
+15. Include the completed A-04: Test Report in your submission
+	• This document does not have to be part of your cleaned, submitted TAR file
+	
+16. Make sure to submit your commented, cleaned TAR file to the appropriate drop-box by the due date
+and time
+
