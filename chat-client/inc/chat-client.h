@@ -17,6 +17,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#define PORT 5000
+#define PORT 5002
 
 char buffer[BUFSIZ];

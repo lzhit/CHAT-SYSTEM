@@ -1,3 +1,9 @@
+//FILE          : chat-server.h
+//PROJECT       : SENG2030 - Assignment 4
+//PROGRAMMER    : Lidiia Zhitova
+//FIRST VERSION : 2020-03-28
+
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -13,43 +19,14 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include "clientLList.h"
 
-#define PORT 5000
+//CONSTANTS
+#define PORT     5002
 
-typedef struct msgInfo
-{
-  char ip[16];
-  char name[5];
-  char msg[80];
-
-
-} MSGINFO;
-
-
-
-#ifndef LIST
-#define LIST
-
-typedef struct Node {
-    struct Node* prev;
-    struct Node* next;
-    int socket;
-    char ip[16];
-    char name[5];
-} Client;
-
-Client *newNode(int client_socket, char* ip) {
-    Client *client = (Client *)malloc( sizeof(Client) );
-    client->socket = client_socket;
-    client->prev = NULL;
-    client->next = NULL;
-    strncpy(client->ip, ip, 16);
-    strncpy(client->name, "NULL", 5);
-    return client;
-}
-
-#endif // LIST
-
-// thread function prototype
+// FUNCTION PROTOTYPES
+void initServer(int* server_socket);
+void acceptClient(int server_socket);
 void *socketThread(void *);
-void send_to_all_clients(Client *this_client, char msg[]);
+void broadcast_msg(Client* this_client, char msg[]);
+void alarmHandler(int signal_number);
