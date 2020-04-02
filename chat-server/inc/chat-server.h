@@ -19,10 +19,11 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <time.h>
 #include "clientLList.h"
 
 //CONSTANTS
-#define PORT     5002
+#define PORT     5006
 
 // FUNCTION PROTOTYPES
 void initServer(int* server_socket);

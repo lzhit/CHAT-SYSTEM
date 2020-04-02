@@ -52,63 +52,6 @@ void initServer(int* server_socket)
 
 
 
-
-//NAME        : acceptClient
-//DESCRIPTION : accepts packets from the clients and starts threads for them
-//PARAMETERS  : int server_socket
-//RETURNS     : void
-void acceptClient(int server_socket)
-{
-  int                client_len;
-  int                client_socket;
-  struct sockaddr_in client_addr;
-  pthread_t	         tid[10];
-  int                whichClient;
-                     numClients = -1;
-
-  while (numClients < 10)
-  {
-    // accept a packet from the client
-    client_len = sizeof (client_addr);
-    if ((client_socket = accept (server_socket,(struct sockaddr *)&client_addr, &client_len)) < 0)
-    {
-      printf ("[SERVER] : accept() FAILED\n");
-      fflush(stdout);
-      exit(4);
-    }
-
-    getpeername(client_socket,(struct sockaddr *)&client_addr, &client_len);
-
-    // Store the client info in the linked list
-    Client *c = insert(client_socket, inet_ntoa(client_addr.sin_addr));
-
-    if (numClients == -1 )
-    {
-      numClients = 1;
-    }
-    else
-    {
-      printf ( "%d\n", numClients);
-      numClients++;
-    }
-
-    if (pthread_create(&(tid[(numClients-1)]), NULL, socketThread, (void *)c))
-    {
-      printf ("[SERVER] : pthread_create() FAILED\n");
-      fflush(stdout);
-      exit(5);
-    }
-  }
-
-  printf("\n[SERVER] : Now we wait for the threads to complete ... \n");
-  for(int i=0; i<10; i++)
-  {
-    pthread_join(tid[i], (void *)(&whichClient));
-  }
-}
-
-
-
 //NAME        : alarmHandler
 //DESCRIPTION : exits the program when number of clients becomes 0 (updates every 2s)
 //PARAMETERS  : int signal_number

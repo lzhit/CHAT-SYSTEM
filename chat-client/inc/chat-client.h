@@ -16,7 +16,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <stdarg.h>
+#include <fcntl.h>
+#include <ncurses.h>
 
-#define PORT 5002
+#define PORT    5006
+#define BUFLEN  80
 
-char buffer[BUFSIZ];
+//char buffer[BUFSIZ];
+
+void *inputThread(void* server_socket);
+void *outputThread(void* server_socket);
+int checkPattern(char string[]);

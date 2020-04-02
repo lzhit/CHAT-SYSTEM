@@ -9,6 +9,62 @@
 #include "../inc/clientLList.h"
 
 
+//NAME        : acceptClient
+//DESCRIPTION : accepts packets from the clients and starts threads for them
+//PARAMETERS  : int server_socket
+//RETURNS     : void
+void acceptClient(int server_socket)
+{
+  int                client_len;
+  int                client_socket;
+  struct sockaddr_in client_addr;
+  pthread_t	         tid[10];
+  int                whichClient;
+                     numClients = -1;
+
+  while (numClients < 10)
+  {
+    // accept a packet from the client
+    client_len = sizeof (client_addr);
+    if ((client_socket = accept (server_socket,(struct sockaddr *)&client_addr, &client_len)) < 0)
+    {
+      printf ("[SERVER] : accept() FAILED\n");
+      fflush(stdout);
+      exit(4);
+    }
+
+    getpeername(client_socket,(struct sockaddr *)&client_addr, &client_len);
+
+    // Store the client info in the linked list
+    Client *c = insert(client_socket, inet_ntoa(client_addr.sin_addr));
+
+    if (numClients == -1 )
+    {
+      numClients = 1;
+    }
+    else
+    {
+      printf ( "%d\n", numClients);
+      numClients++;
+    }
+
+    if (pthread_create(&(tid[(numClients-1)]), NULL, socketThread, (void *)c))
+    {
+      printf ("[SERVER] : pthread_create() FAILED\n");
+      fflush(stdout);
+      exit(5);
+    }
+  }
+
+  printf("\n[SERVER] : Now we wait for the threads to complete ... \n");
+  for(int i=0; i<10; i++)
+  {
+    pthread_join(tid[i], (void *)(&whichClient));
+  }
+}
+
+
+
 //NAME        : socketThread
 //DESCRIPTION : recieves messages from client and sends them to a broadcasting function
 //PARAMETERS  : void *client - client node from Client linked list
@@ -17,7 +73,6 @@ void *socketThread(void *client)
 {
   // used for accepting incoming command and also holding the command's response
   char buffer[BUFSIZ];
-  char message[BUFSIZ];
   int sizeOfRead;
   int timeToExit;
   Client *p_client = (Client *) client;
@@ -33,12 +88,20 @@ void *socketThread(void *client)
   int iAmClient = numClients;	// assumes that another connection from another client
 				// hasn't been created in the meantime
 
-  read (clSocket, buffer, BUFSIZ);
+  //get the client user name / user ID
+  if (recv(p_client->socket, p_client->name, NAMELEN, 0) <= 0)
+  {
+    send(p_client->socket, "Error: user ID is invalid\n", BUFSIZ, 0);
+    strcpy(buffer, "");
+  }
+  else
+  {
+      read (clSocket, buffer, BUFSIZ);
+  }
 
   while(strcmp(buffer,">>bye<<") != 0 && strcmp(buffer, "") != 0)
   {
-    sprintf(message, "%s_[%s]_>>_%s_timegoeshere\n", p_client->ip, p_client->name, buffer);
-    broadcast_msg(client, message);
+    broadcast_msg(client, buffer);
 
     // clear out and get the next command and process
     memset(buffer,0,BUFSIZ);
@@ -64,14 +127,28 @@ void *socketThread(void *client)
 //PARAMETERS  : Client* this_client - the client not to send a message to
 //              char msg - message to send
 //RETURNS     : void
-void broadcast_msg(Client* this_client, char msg[])
+void broadcast_msg(Client* this_client, char buffer[])
 {
     Client* tmp = root->next;
+    char message[BUFSIZ];
+    time_t rawtime;
+    struct tm * timeinfo;
+
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
     while (tmp != NULL)
     {
         if (this_client->socket != tmp->socket) // all clients except itself.
         {
-            send(tmp->socket, msg, BUFSIZ, 0);
+          sprintf(message, "%-15s [%-5s] >> %-40s (%d:%d:%d)", this_client->ip, this_client->name, buffer, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+          printf("%s\n", message);
+          write(tmp->socket, message, BUFSIZ);
+        }
+        else
+        {
+          sprintf(message, "%-15s [%-5s] << %-40s (%d:%d:%d)", this_client->ip, this_client->name, buffer,  timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+          printf("%s\n", message);
+          write(tmp->socket, message, BUFSIZ);
         }
         tmp = tmp->next;
     }

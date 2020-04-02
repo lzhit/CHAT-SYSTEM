@@ -12,7 +12,7 @@
 //RETURNS     : Client* - newly created client node
 Client* insert(int client_socket, char* ip)
 {
-    Client* pNode = root;
+    Client* pNode = root; //root is global
     Client* newClient = (Client*) malloc (sizeof(Client));
 
     newClient->socket = client_socket;
@@ -46,7 +46,7 @@ Client* insert(int client_socket, char* ip)
 //RETURNS     : Client* - first node of the list
 Client* delete(Client* client)
 {
-  Client* pNode = root;
+  Client* pNode = root; //root is global
   Client* preNode = NULL;
 
   if (root->socket == client->socket)
