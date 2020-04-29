@@ -45,7 +45,7 @@ void initServer(int* server_socket)
     exit(3);
   }
 
-  // Initial linked list for clients
+  // Initialize the linked list for storing clients
   root = insert(*server_socket, inet_ntoa(server_addr.sin_addr));
 
 }
@@ -60,7 +60,8 @@ void alarmHandler(int signal_number)
 {
   if(numClients == 0)
   {
-     exit(-1);
+     close(server_socket);
+     exit(0);
   }
   signal (signal_number, alarmHandler);
   alarm (2);	// reset alarm
