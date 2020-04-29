@@ -2,7 +2,6 @@
 //PROJECT       : SENG2030 - Assignment 4
 //PROGRAMMER    : Lidiia Zhitova
 //FIRST VERSION : 2020-03-28
-//DESCRIPTION   :
 
 
 #include <stdio.h>
@@ -20,11 +19,15 @@
 #include <fcntl.h>
 #include <ncurses.h>
 
-#define PORT    5006
-#define BUFLEN  80
+#define PORT     5008
+#define BUFFLEN  40
+#define MSGSIZ   78
 
-//char buffer[BUFSIZ];
-
+void initAddr(struct sockaddr_in* server_addr, struct hostent** host);
+void getSocket(int *my_server_socket);
+void connectServer(int *my_server_socket, struct sockaddr_in *server_addr);
+void startInputThread(pthread_t* thread, int* my_server_socket);
+void startOutputThread(pthread_t* thread, int* my_server_socket);
 void *inputThread(void* server_socket);
 void *outputThread(void* server_socket);
 int checkPattern(char string[]);

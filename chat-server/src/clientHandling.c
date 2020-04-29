@@ -15,12 +15,12 @@
 //RETURNS     : void
 void acceptClient(int server_socket)
 {
-  int                client_len;
-  int                client_socket;
-  struct sockaddr_in client_addr;
-  pthread_t	         tid[10];
-  int                whichClient;
-                     numClients = -1;
+  int                 client_len;
+  int                 client_socket;
+  struct sockaddr_in  client_addr;
+  pthread_t	      tid[10];
+  int                 whichClient;
+                      numClients = -1;
 
   while (numClients < 10)
   {
@@ -44,7 +44,6 @@ void acceptClient(int server_socket)
     }
     else
     {
-      printf ( "%d\n", numClients);
       numClients++;
     }
 
@@ -72,7 +71,7 @@ void acceptClient(int server_socket)
 void *socketThread(void *client)
 {
   // used for accepting incoming command and also holding the command's response
-  char buffer[BUFSIZ];
+  char buffer[BUFFSIZ];
   int sizeOfRead;
   int timeToExit;
   Client *p_client = (Client *) client;
@@ -82,7 +81,7 @@ void *socketThread(void *client)
   int clSocket = p_client->socket;
 
   // Clear out the input Buffer
-  memset(buffer,0,BUFSIZ);
+  memset(buffer,0,BUFFSIZ);
 
   // increment the numClients
   int iAmClient = numClients;	// assumes that another connection from another client
@@ -91,12 +90,12 @@ void *socketThread(void *client)
   //get the client user name / user ID
   if (recv(p_client->socket, p_client->name, NAMELEN, 0) <= 0)
   {
-    send(p_client->socket, "Error: user ID is invalid\n", BUFSIZ, 0);
+    send(p_client->socket, "Error: user ID is invalid\n", BUFFSIZ, 0);
     strcpy(buffer, "");
   }
   else
   {
-      read (clSocket, buffer, BUFSIZ);
+      read (clSocket, buffer, BUFFSIZ);
   }
 
   while(strcmp(buffer,">>bye<<") != 0 && strcmp(buffer, "") != 0)
@@ -104,8 +103,8 @@ void *socketThread(void *client)
     broadcast_msg(client, buffer);
 
     // clear out and get the next command and process
-    memset(buffer,0,BUFSIZ);
-    read (clSocket, buffer, BUFSIZ);
+    memset(buffer,0,BUFFSIZ);
+    read (clSocket, buffer, BUFFSIZ);
   }
   close(clSocket);
 
@@ -130,26 +129,27 @@ void *socketThread(void *client)
 void broadcast_msg(Client* this_client, char buffer[])
 {
     Client* tmp = root->next;
-    char message[BUFSIZ];
+    char message[MSGSIZ];
     time_t rawtime;
     struct tm * timeinfo;
 
+    //get the local time
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
     while (tmp != NULL)
     {
-        if (this_client->socket != tmp->socket) // all clients except itself.
+        //send the message to all clients except sender
+        if (this_client->socket != tmp->socket)
         {
           sprintf(message, "%-15s [%-5s] >> %-40s (%d:%d:%d)", this_client->ip, this_client->name, buffer, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-          printf("%s\n", message);
-          write(tmp->socket, message, BUFSIZ);
+          write(tmp->socket, message, MSGSIZ);
         }
-        else
+        else //send to sender (this message has the '<<' instead of the '>>')
         {
-          sprintf(message, "%-15s [%-5s] << %-40s (%d:%d:%d)", this_client->ip, this_client->name, buffer,  timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-          printf("%s\n", message);
-          write(tmp->socket, message, BUFSIZ);
+          sprintf(message, "%-15s [%-5s] << %-40s (%d:%d:%d)", this_client->ip, this_client->name, buffer, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+          write(tmp->socket, message, MSGSIZ);
         }
+
         tmp = tmp->next;
     }
 }

@@ -2,7 +2,7 @@
 //PROJECT       : SENG2030 - Assignment 4
 //PROGRAMMER    : Lidiia Zhitova
 //FIRST VERSION : 2020-03-28
-//DESCRIPTION   :
+//DESCRIPTION   : ncurses functions
 
 
 #include "../inc/ncursesUI.h"
@@ -37,43 +37,10 @@ void clear_ncurses(WINDOW** msg_win, WINDOW** chat_win)
 
 
 
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
-void setupUI(WINDOW** msg_win, WINDOW** chat_win)
-{
-  int msg_startx, msg_starty, msg_width, msg_height, i;
-  int chat_startx, chat_starty, chat_width, chat_height;
-
-  start_ncurses();
-
-  chat_height = 5;
-  chat_width  = COLS - 2;
-  chat_startx = 1;
-  chat_starty = LINES - chat_height;
-
-  msg_height = LINES - chat_height - 1;
-  msg_width  = COLS;
-  msg_startx = 0;
-  msg_starty = 0;
-
-
-  /* create the output window */
-  *chat_win = create_newwin(chat_height, chat_width, chat_starty, chat_startx);
-  scrollok(*chat_win, TRUE);
-
-  /* create the input window */
-  *msg_win = create_newwin(msg_height, msg_width, msg_starty, msg_startx);
-  scrollok(*msg_win, TRUE);
-}
-
-
-
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : setupChatW
+//DESCRIPTION : displays the chat window
+//PARAMETERS  : WINDOW** chat_win - pointer to the chat window
+//RETURNS     : void
 void setupChatW(WINDOW** chat_win)
 {
   int chat_startx, chat_starty, chat_width, chat_height;
@@ -90,10 +57,10 @@ void setupChatW(WINDOW** chat_win)
 
 
 
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : setupMsgW
+//DESCRIPTION : displays the message window
+//PARAMETERS  : WINDOW** msg_win - pointer to the message window
+//RETURNS     : void
 void setupMsgW(WINDOW** msg_win)
 {
   int msg_startx, msg_starty, msg_width, msg_height, i;
@@ -111,10 +78,13 @@ void setupMsgW(WINDOW** msg_win)
 
 
 
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : create_newwin
+//DESCRIPTION : draws a window in the console
+//PARAMETERS  : int height - hight of the window
+//              int width - the width of the window
+//              int starty - the top most point of the window
+//              int startx - the left most point of the window
+//RETURNS     : void
 WINDOW *create_newwin(int height, int width, int starty, int startx)
 {
   WINDOW *local_win;
@@ -128,10 +98,11 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 
 
 
-//NAME        :
-//DESCRIPTION : /* This function is for taking input chars from the user */
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : input_win
+//DESCRIPTION : This function is for taking input chars from the user
+//PARAMETERS  : WINDOW* win - window for collecting user input
+//              char* word - user input will be stored in this variable
+//RETURNS     : void
 void input_win(WINDOW * win, char *word)
 {
   int i, ch;
@@ -145,6 +116,11 @@ void input_win(WINDOW * win, char *word)
   wmove(win, 1, 1);                       /* position cusor at top */
   for (i = 0; (ch = wgetch(win)) != '\n'; i++)
   {
+    if (i > BUFLEN-2)
+    {
+      continue;                         //no more than 80 characters are accepted
+    }
+
     word[i] = ch;                       /* '\n' not copied */
     if (col++ < maxcol-2)               /* if within window */
     {
@@ -174,47 +150,44 @@ void input_win(WINDOW * win, char *word)
 
 
 
-int displayX = 1;
 int displayY = 0;
 
-//NAME        :
+//NAME        : display_win
 //DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//PARAMETERS  : WINDOW* win - window for displaying text
+//              char* word - contains the text to display
+//RETURNS     : void
 void display_win(WINDOW *win, char *word)
 {
-
-
-  // if (displayY > 10)
-  // {
-  //   printf("here\n");
-  //   printf("displayY = %d\n", displayY);
-  //   blankWin(win);                          /* make it a clean window */
-  //   displayY = 0;
-  // }
-  displayY++;
+  //clear the screen after every 10 messages
+  if (displayY >= 10)
+  {
+    blankWin(win);   /* make it a clean window */
+    displayY = 0;
+  }
+  displayY++; // display every message on a new line
   wmove(win, displayY, 1);
   wprintw(win, word);
   wrefresh(win);
-} /* display_win */
+}
 
 
 
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : destroy_win
+//DESCRIPTION : removes a window from the console
+//PARAMETERS  : WINDOW* win - the window to remove
+//RETURNS     : void
 void destroy_win(WINDOW *win)
 {
   delwin(win);
-}  /* destory_win */
+}
 
 
 
-//NAME        :
-//DESCRIPTION :
-//PARAMETERS  :
-//RETURNS     :
+//NAME        : blankWin
+//DESCRIPTION : removes the contents of a window
+//PARAMETERS  : WINDOW* win - the window to clear
+//RETURNS     : void
 void blankWin(WINDOW *win)
 {
   int i;
@@ -230,4 +203,4 @@ void blankWin(WINDOW *win)
   }
   box(win, 0, 0);             /* draw the box again */
   wrefresh(win);
-}  /* blankWin */
+}

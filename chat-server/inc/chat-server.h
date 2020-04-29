@@ -23,7 +23,11 @@
 #include "clientLList.h"
 
 //CONSTANTS
-#define PORT     5006
+#define PORT     5008
+#define BUFFSIZ   40
+#define MSGSIZ   78
+
+static int server_socket;
 
 // FUNCTION PROTOTYPES
 void initServer(int* server_socket);
