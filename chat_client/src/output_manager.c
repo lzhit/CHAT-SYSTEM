@@ -4,19 +4,19 @@
 //FIRST VERSION : 2020-03-28
 //DESCRIPTION   : contains an output thread function and a function which starts the thread
 
-#include "../inc/chat-client.h"
-#include "../inc/ncursesUI.h"
+#include "../inc/chat_client.h"
+#include "../inc/ncurses_UI.h"
 
 
 
-//NAME        : startOutputThread
+//NAME        : start_output_thread
 //DESCRIPTION : creates and starts the output thread
 //PARAMETERS  : pthread_t *thread
 //              int my_server_socket - pointer to the server socket
 //RETURNS     : void
-void startOutputThread(pthread_t* thread, int* my_server_socket)
+void start_output_thread(pthread_t* thread, int* server_socket)
 {
-  if (pthread_create(thread, NULL, outputThread, (void*)&(*my_server_socket)))
+  if (pthread_create(thread, NULL, output_thread, (void*)&(*server_socket)))
   {
     printf ("[SERVER] : pthread_create() FAILED\n");
     fflush(stdout);
@@ -26,39 +26,39 @@ void startOutputThread(pthread_t* thread, int* my_server_socket)
 
 
 
-//NAME        : outputThread
+//NAME        : output_thread
 //DESCRIPTION : thread fucntion that is responsible for reading the incoming messages and displaying them
 //PARAMETERS  : void * server_socket - pointer to the server socket
 //RETURNS     : void
-void *outputThread(void* server_socket)
+void *output_thread(void* socket)
 {
-  int* my_server_socket = (int*) server_socket;
-  int len = 0;
-  char buffer[MSGSIZ];
-  WINDOW *msg_win;
-  setupMsgW(&msg_win);
+  int* server_socket = (int*) socket;
+  int received_data_length = 0;
+  char message[MESSAGE_SIZE];
+  WINDOW *message_window;
+  setup_message_window(&message_window);
 
   while(1)
   {
     /* clear out the contents of buffer (if any) */
-    memset(buffer, 0, MSGSIZ);
-		len = read (*my_server_socket, buffer, MSGSIZ);
-    int i = checkPattern(buffer);
-    if((strcmp(buffer, "") != 0) && (i == 0)) // only display message if it has the correct pattern
+    memset(message, 0, MESSAGE_SIZE);
+		received_data_length = read (*server_socket, message, MESSAGE_SIZE);
+    int is_correct_pattern = check_pattern(message);
+    if((strcmp(message, "") != 0) && (is_correct_pattern == 0)) // only display message if it has the correct pattern
     {
-      display_win(msg_win, buffer);
+      display_window(message_window, message);
     }
   }
-    destroy_win(msg_win);
+    destroy_window(message_window);
 }
 
 
 
-//NAME        : checkPattern
+//NAME        : check_pattern
 //DESCRIPTION : checks the pattern of the message is correct
 //PARAMETERS  : char string[] - the message to check
 //RETURNS     : int 0 if the pattern is correct, -1 otherwise
-int checkPattern(char string[])
+int check_pattern(char string[])
 {
   for (int i = 0; i <= 26; i++)
   {

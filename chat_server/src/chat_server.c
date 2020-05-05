@@ -1,8 +1,7 @@
-//FILE          : chat-server.c
+//FILE          : chat_server.c
 //PROJECT       : SENG2030 - Assignment 4
-//PROGRAMMER    : Lidiia Zhitova
+//AUTHOR        : Lidiia Zhitova
 //FIRST VERSION : 2020-03-28
-//DESCRIPTION   : main function for server program
 
 /*
   - the client connections are stored in a linked list
@@ -18,21 +17,40 @@
 */
 
 
-#include "../inc/chat-server.h"
-#include "../inc/clientLList.h"
+#include "../inc/chat_server.h"
+#include "../inc/client_linked_list.h"
 
 
 int main (int argc, char* argv[])
 {
+  number_of_current_clients = -1;
+
   //set up a watch dog which will keep track of client connections and shut down
   //the server when the number of connections becomes 0
-  signal (SIGALRM, alarmHandler);
+  signal (SIGALRM, alarm_handler);
   alarm (2);
 
   //initialize server and start acceptig clients
-  initServer(&server_socket);
-  acceptClient(server_socket);
+  initialize_server(&server_socket); // server_socket is global
+  accept_client(server_socket);
 
   close (server_socket);
   return 0;
+}
+
+
+
+//NAME        : alarmHandler
+//DESCRIPTION : exits the program when number of clients becomes 0 (updates every 2s)
+//PARAMETERS  : int signal_number
+//RETURNS     : void
+void alarm_handler(int signal_number)
+{
+  if(number_of_current_clients == 0)
+  {
+     close(server_socket);
+     exit(0);
+  }
+  signal (signal_number, alarm_handler);
+  alarm (2);	// reset alarm
 }

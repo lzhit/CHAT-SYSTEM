@@ -1,6 +1,6 @@
-//FILE          : chat-server.h
+//FILE          : chat_server.h
 //PROJECT       : SENG2030 - Assignment 4
-//PROGRAMMER    : Lidiia Zhitova
+//AUTHOR        : Lidiia Zhitova
 //FIRST VERSION : 2020-03-28
 
 
@@ -20,18 +20,19 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <time.h>
-#include "clientLList.h"
+#include "client_linked_list.h"
 
 //CONSTANTS
-#define PORT     5008
-#define BUFFSIZ   40
-#define MSGSIZ   78
+#define PORT                      5008
+#define BUFFSIZ                   40
+#define MESSAGE_SIZE              78
+#define NUMBER_OF_CLIENTS_ALLOWED 10
 
 static int server_socket;
 
 // FUNCTION PROTOTYPES
-void initServer(int* server_socket);
-void acceptClient(int server_socket);
-void *socketThread(void *);
-void broadcast_msg(Client* this_client, char msg[]);
-void alarmHandler(int signal_number);
+void initialize_server(int* server_socket);
+void accept_client(int server_socket);
+void *socket_thread(void *);
+void broadcast_message(Client* this_client, char buffer[]);
+void alarm_handler(int signal_number);
