@@ -21,13 +21,12 @@
 
 //FUNCTION PROTOTYPES
 void start_ncurses();
-void clear_ncurses(WINDOW** msg_win, WINDOW** chat_win);
-void setupUI(WINDOW** msg_win, WINDOW** chat_win);
-void setupMsgW(WINDOW** msg_win);
-void setupChatW(WINDOW** chat_win);
-WINDOW *create_newwin(int, int, int, int);
-void destroy_win(WINDOW *);
-void input_win(WINDOW *, char *);
-void display_win(WINDOW *, char *);
-void destroy_win(WINDOW *win);
-void blankWin(WINDOW *win);
+void clear_ncurses(WINDOW** message_window, WINDOW** chat_window);
+void setup_message_window(WINDOW** message_window);
+void setup_chat_window(WINDOW** chat_window);
+WINDOW *create_new_window(int, int, int, int);
+void destroy_window(WINDOW *);
+void input_window(WINDOW *, char *);
+void display_window(WINDOW *, char *);
+void destroy_window(WINDOW *window);
+void blank_window(WINDOW *window);

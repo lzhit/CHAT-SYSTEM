@@ -1,6 +1,6 @@
-//FILE          : clientLList.h
+//FILE          : client_linked_list.h
 //PROJECT       : SENG2030 - Assignment 4
-//PROGRAMMER    : Lidiia Zhitova
+//AUTHOR        : Lidiia Zhitova
 //FIRST VERSION : 2020-03-28
 
 #include <stdio.h>
@@ -12,8 +12,8 @@
 #include <string.h>
 
 //CONSTANTS
-#define IPLEN    16
-#define NAMELEN  5
+#define IP_LENGTH    16
+#define NAME_LENGTH  5
 
 //NODE IMPLEMENTATION
 #ifndef CLIENTLIST
@@ -21,18 +21,17 @@
 
 typedef struct Node
 {
-    struct Node* prev;
     struct Node* next;
     int socket;
-    char ip[IPLEN];
-    char name[NAMELEN];
+    char ip[IP_LENGTH];
+    char name[NAME_LENGTH];
 } Client;
 
 #endif
 
 //GLOBAL VARIABLES
 Client *root;    //first node of the list
-int numClients;
+int number_of_current_clients;
 
 
 //FUNCTION PROTOTYPES
